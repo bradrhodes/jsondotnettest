@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using IQ.Platform.TestUtilities;
+using Newtonsoft.Json;
 using Ploeh.AutoFixture;
 using Xunit;
 
@@ -6,41 +7,90 @@ namespace JsonDotNetTest
 {
 	public class JsonDotNetTest
 	{
-		[Fact]
-		public void DeserializtionTest()
+		[Theory, AutoFakeItEasyData]
+		public void OldStyleImmutableTest(MutableClass initial)
 		{
-			var fixture = new Fixture();
-
-			var initial = fixture.Create<MutableClass>();
-
 			var serialized = JsonConvert.SerializeObject(initial);
 
-			var oldImmutable = JsonConvert.DeserializeObject<OldStyleImmutableClass>(serialized);
-			var newImmutable = JsonConvert.DeserializeObject<NewStyleImmutableClass>(serialized);
-			var missingConstructorProperty = JsonConvert.DeserializeObject<MissingConstructorProperty>(serialized);
-			var oldWithDefaultConstructor = JsonConvert.DeserializeObject<OldStyleImmutableClassWithDefaultConstructor>(serialized);
-			var newWithDefaultConstructor = JsonConvert.DeserializeObject<NewStyleImmutableClassWithDefaultConstructor>(serialized);
+			var result = JsonConvert.DeserializeObject<OldStyleImmutableClass>(serialized);
 
-
-			Assert.Equal(initial.Property1, oldImmutable.Property1);
-			Assert.Equal(initial.Guid1, oldImmutable.Guid1);
-			Assert.Equal(initial.Int1, oldImmutable.Int1);
-
-			Assert.Equal(initial.Property1, newImmutable.Property1);
-			Assert.Equal(initial.Guid1, newImmutable.Guid1);
-			Assert.Equal(initial.Int1, newImmutable.Int1);
-
-			Assert.Equal(initial.Property1, missingConstructorProperty.Property1);
-			Assert.NotEqual(initial.Guid1, missingConstructorProperty.Guid1);  // This property was not included in the constructor
-			Assert.Equal(initial.Int1, missingConstructorProperty.Int1);
-
-			Assert.NotEqual(initial.Property1, oldWithDefaultConstructor.Property1);
-			Assert.NotEqual(initial.Guid1, oldWithDefaultConstructor.Guid1);
-			Assert.NotEqual(initial.Int1, oldWithDefaultConstructor.Int1);
-
-			Assert.NotEqual(initial.Property1, newWithDefaultConstructor.Property1);
-			Assert.NotEqual(initial.Guid1, newWithDefaultConstructor.Guid1);
-			Assert.NotEqual(initial.Int1, newWithDefaultConstructor.Int1);
+			Assert.Equal(initial.Property1, result.Property1);
+			Assert.Equal(initial.Guid1, result.Guid1);
+			Assert.Equal(initial.Int1, result.Int1);
 		}
+
+		[Theory, AutoFakeItEasyData]
+		public void NewStyleImmutableTest(MutableClass initial)
+		{
+			var serialized = JsonConvert.SerializeObject(initial);
+
+			var result = JsonConvert.DeserializeObject<NewStyleImmutableClass>(serialized);
+
+			Assert.Equal(initial.Property1, result.Property1);
+			Assert.Equal(initial.Guid1, result.Guid1);
+			Assert.Equal(initial.Int1, result.Int1);
+		}
+
+		[Theory, AutoFakeItEasyData]
+		public void MissingConstructorPropertyTest(MutableClass initial)
+		{
+			var serialized = JsonConvert.SerializeObject(initial);
+
+			var result = JsonConvert.DeserializeObject<MissingConstructorProperty>(serialized);
+
+			Assert.Equal(initial.Property1, result.Property1);
+			Assert.NotEqual(initial.Guid1, result.Guid1);
+			Assert.Equal(initial.Int1, result.Int1);
+		}
+
+		[Theory, AutoFakeItEasyData]
+		public void NewStyleImmutableWithDefautlConstructorTest(MutableClass initial)
+		{
+			var serialized = JsonConvert.SerializeObject(initial);
+
+			var result = JsonConvert.DeserializeObject<NewStyleImmutableClassWithDefaultConstructor>(serialized);
+
+			Assert.NotEqual(initial.Property1, result.Property1);
+			Assert.NotEqual(initial.Guid1, result.Guid1);
+			Assert.NotEqual(initial.Int1, result.Int1);
+		}
+
+		[Theory, AutoFakeItEasyData]
+		public void OldStyleImmutableWithDefautlConstructorTest(MutableClass initial)
+		{
+			var serialized = JsonConvert.SerializeObject(initial);
+
+			var result = JsonConvert.DeserializeObject<OldStyleImmutableClassWithDefaultConstructor>(serialized);
+
+			Assert.NotEqual(initial.Property1, result.Property1);
+			Assert.NotEqual(initial.Guid1, result.Guid1);
+			Assert.NotEqual(initial.Int1, result.Int1);
+		}
+
+		[Theory, AutoFakeItEasyData]
+		public void NewStyleImmutableWithDefautlConstructorAndAttributeTest(MutableClass initial)
+		{
+			var serialized = JsonConvert.SerializeObject(initial);
+
+			var result = JsonConvert.DeserializeObject<NewStyleImmutableClassWithDefaultConstructorAndAttribute>(serialized);
+
+			Assert.Equal(initial.Property1, result.Property1);
+			Assert.Equal(initial.Guid1, result.Guid1);
+			Assert.Equal(initial.Int1, result.Int1);
+		}
+
+		[Theory, AutoFakeItEasyData]
+		public void OldStyleImmutableWithDefautlConstructorAndAttributeTest(MutableClass initial)
+		{
+			var serialized = JsonConvert.SerializeObject(initial);
+
+			var result = JsonConvert.DeserializeObject<NewStyleImmutableClassWithDefaultConstructorAndAttribute>(serialized);
+
+			Assert.Equal(initial.Property1, result.Property1);
+			Assert.Equal(initial.Guid1, result.Guid1);
+			Assert.Equal(initial.Int1, result.Int1);
+		}
+
+
 	}
 }
