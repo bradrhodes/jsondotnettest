@@ -17,9 +17,11 @@ namespace JsonDotNetTest
 
 			var oldImmutable = JsonConvert.DeserializeObject<OldStyleImmutableClass>(serialized);
 			var newImmutable = JsonConvert.DeserializeObject<NewStyleImmutableClass>(serialized);
-			var nonFullImmutable = JsonConvert.DeserializeObject<MissingConstructorProperty>(serialized);
+			var missingConstructorProperty = JsonConvert.DeserializeObject<MissingConstructorProperty>(serialized);
+			var oldWithDefaultConstructor = JsonConvert.DeserializeObject<OldStyleImmutableClassWithDefaultConstructor>(serialized);
+			var newWithDefaultConstructor = JsonConvert.DeserializeObject<NewStyleImmutableClassWithDefaultConstructor>(serialized);
 
-			
+
 			Assert.Equal(initial.Property1, oldImmutable.Property1);
 			Assert.Equal(initial.Guid1, oldImmutable.Guid1);
 			Assert.Equal(initial.Int1, oldImmutable.Int1);
@@ -28,9 +30,17 @@ namespace JsonDotNetTest
 			Assert.Equal(initial.Guid1, newImmutable.Guid1);
 			Assert.Equal(initial.Int1, newImmutable.Int1);
 
-			Assert.Equal(initial.Property1, nonFullImmutable.Property1);
-			Assert.NotEqual(initial.Guid1, nonFullImmutable.Guid1);
-			Assert.Equal(initial.Int1, nonFullImmutable.Int1);
+			Assert.Equal(initial.Property1, missingConstructorProperty.Property1);
+			Assert.NotEqual(initial.Guid1, missingConstructorProperty.Guid1);  // This property was not included in the constructor
+			Assert.Equal(initial.Int1, missingConstructorProperty.Int1);
+
+			Assert.NotEqual(initial.Property1, oldWithDefaultConstructor.Property1);
+			Assert.NotEqual(initial.Guid1, oldWithDefaultConstructor.Guid1);
+			Assert.NotEqual(initial.Int1, oldWithDefaultConstructor.Int1);
+
+			Assert.NotEqual(initial.Property1, newWithDefaultConstructor.Property1);
+			Assert.NotEqual(initial.Guid1, newWithDefaultConstructor.Guid1);
+			Assert.NotEqual(initial.Int1, newWithDefaultConstructor.Int1);
 		}
 	}
 }
